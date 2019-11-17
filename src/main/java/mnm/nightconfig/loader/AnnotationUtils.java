@@ -36,7 +36,7 @@ class AnnotationUtils {
     @Nullable
     static String getComment(AnnotatedElement annotatedElement) {
         Comment comment = annotatedElement.getDeclaredAnnotation(Comment.class);
-        return comment != null ? comment.value() : null;
+        return comment != null ? String.join("\n", comment.value()) : null;
     }
 
 }

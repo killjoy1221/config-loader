@@ -48,12 +48,13 @@ class ConfigLoaderBuilder<T extends Config> implements ConfigLoader.Builder<T> {
                 path.addAll(AnnotationUtils.getPath(f));
                 String comment = AnnotationUtils.getComment(f);
                 if (comment != null) {
-                    Class<?> type = f.getType();
-                    if (type.isPrimitive() || type == String.class) {
-                        comments.set(path, "dummy");
-                    }
                     comments.setComment(path, comment);
-                    addComments(path, f.getType());
+                    Class<?> type = f.getType();
+                    if (format.supportsType(type)) {
+                        comments.set(path, "dummy");
+                    } else {
+                        addComments(path, type);
+                    }
                 }
             }
         }
