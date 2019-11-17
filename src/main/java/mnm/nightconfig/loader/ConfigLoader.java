@@ -196,7 +196,7 @@ public interface ConfigLoader<T extends Config> {
          * @param reader A supplier of a Reader
          * @return This object
          */
-        Builder<T> withReader(StreamOpener<Reader> reader);
+        Builder<T> setReader(StreamOpener<Reader> reader);
 
         /**
          * Sets the given supplier output to be used to write the config when saving.
@@ -204,7 +204,7 @@ public interface ConfigLoader<T extends Config> {
          * @param writer A supplier of a Writer.
          * @return This object
          */
-        Builder<T> withWriter(StreamOpener<Writer> writer);
+        Builder<T> setWriter(StreamOpener<Writer> writer);
 
         /**
          * Adds comments to the output of the loader. Subsequent calls may overwrite previous values or throw exceptions
@@ -215,7 +215,7 @@ public interface ConfigLoader<T extends Config> {
          * @param classs The class containing comment annotated fields
          * @return This instance
          */
-        Builder<T> withComments(Class<?> classs);
+        Builder<T> setComments(Class<?> classs);
 
         /**
          * Builds the {@link ConfigLoader}.
@@ -233,7 +233,7 @@ public interface ConfigLoader<T extends Config> {
          * @return This instance
          */
         default Builder<T> loadFrom(String configString) {
-            return withReader(() -> new StringReader(configString));
+            return setReader(() -> new StringReader(configString));
         }
 
         /**
@@ -244,7 +244,7 @@ public interface ConfigLoader<T extends Config> {
          * @return This instance
          */
         default Builder<T> readFrom(URL url, Charset charset) {
-            return withReader(() -> new InputStreamReader(url.openStream(), charset));
+            return setReader(() -> new InputStreamReader(url.openStream(), charset));
         }
 
         /**
@@ -255,7 +255,7 @@ public interface ConfigLoader<T extends Config> {
          * @return This instance
          */
         default Builder<T> readFrom(Path path, Charset charset) {
-            return withReader(() -> Files.newBufferedReader(path, charset));
+            return setReader(() -> Files.newBufferedReader(path, charset));
         }
 
         /**
@@ -267,7 +267,7 @@ public interface ConfigLoader<T extends Config> {
          * @return This instance
          */
         default Builder<T> writeTo(Path path, Charset charset, OpenOption... options) {
-            return withWriter(() -> Files.newBufferedWriter(path, charset, options));
+            return setWriter(() -> Files.newBufferedWriter(path, charset, options));
         }
 
         /**
@@ -278,7 +278,7 @@ public interface ConfigLoader<T extends Config> {
          * @param options The open options
          * @return This instance
          */
-        default Builder<T> withPath(Path path, Charset charset, OpenOption... options) {
+        default Builder<T> setPath(Path path, Charset charset, OpenOption... options) {
             return readFrom(path, charset).writeTo(path, charset, options);
         }
     }

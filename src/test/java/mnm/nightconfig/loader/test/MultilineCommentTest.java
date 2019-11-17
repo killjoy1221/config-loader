@@ -16,7 +16,7 @@ public class MultilineCommentTest {
     public void testMultiLineComment() throws IOException {
 
         ConfigLoader<CommentedConfig> loader = ConfigLoader.builder(TomlFormat.instance())
-                .withComments(MultiLineCommentConfig.class)
+                .setComments(MultiLineCommentConfig.class)
                 .build();
 
         String config = loader.dump(new MultiLineCommentConfig());

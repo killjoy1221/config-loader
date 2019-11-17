@@ -8,7 +8,6 @@ import mnm.nightconfig.loader.ConfigLoader;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.io.StringWriter;
 
 import static org.junit.Assert.assertEquals;
 
@@ -18,7 +17,7 @@ public class CommentTest {
     public void testCommentAnnotations() throws IOException {
 
         ConfigLoader<CommentedConfig> loader = ConfigLoader.builder(TomlFormat.instance())
-                .withComments(AnnotatedCommentedConfig.class)
+                .setComments(AnnotatedCommentedConfig.class)
                 .build();
 
         String config = loader.dump(new AnnotatedCommentedConfig());

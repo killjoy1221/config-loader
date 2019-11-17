@@ -25,18 +25,18 @@ class ConfigLoaderBuilder<T extends Config> implements ConfigLoader.Builder<T> {
         this.format = format;
     }
 
-    public ConfigLoader.Builder<T> withReader(StreamOpener<Reader> reader) {
+    public ConfigLoader.Builder<T> setReader(StreamOpener<Reader> reader) {
         this.reader = reader;
         return this;
     }
 
-    public ConfigLoader.Builder<T> withWriter(StreamOpener<Writer> writer) {
+    public ConfigLoader.Builder<T> setWriter(StreamOpener<Writer> writer) {
         this.writer = writer;
         return this;
     }
 
     @Override
-    public ConfigLoader.Builder<T> withComments(Class<?> classs) {
+    public ConfigLoader.Builder<T> setComments(Class<?> classs) {
         addComments(Collections.emptyList(), classs);
         return this;
     }
