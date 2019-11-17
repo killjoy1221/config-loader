@@ -73,6 +73,34 @@ public interface ConfigLoader<T extends Config> {
     Writer openWriter() throws IOException;
 
     /**
+     * Converts a object to a config and sets the comments so it can be written to disk.
+     *
+     * @param object The config object
+     * @param <C>    The config type
+     * @return The config
+     */
+    default <C> T fromObject(C object) {
+        T config = new ObjectConverter().toConfig(object, getFormat()::createConfig);
+
+        if (getFormat().supportsComments()) {
+            ((CommentedConfig) config).putAllComments(getComments());
+        }
+        return config;
+    }
+
+    /**
+     * Convenience method to convert a config to a config object.
+     *
+     * @param config The config
+     * @param func   The config type factory
+     * @param <C>    The config type
+     * @return The new config object
+     */
+    default <C> C toObject(T config, Supplier<C> func) {
+        return new ObjectConverter().toObject(config, func);
+    }
+
+    /**
      * Loads the configuration and returns the {@link Config} object.
      *
      * @return The config object
@@ -93,7 +121,7 @@ public interface ConfigLoader<T extends Config> {
      * @throws IOException
      */
     default <C> C load(Supplier<C> func) throws IOException {
-        return new ObjectConverter().toObject(load(), func);
+        return toObject(load(), func);
     }
 
     /**
@@ -103,9 +131,6 @@ public interface ConfigLoader<T extends Config> {
      * @throws IOException
      */
     default void save(T config) throws IOException {
-        if (getFormat().supportsComments()) {
-            ((CommentedConfig) config).putAllComments(getComments());
-        }
         try (Writer w = openWriter()) {
             getFormat().createWriter().write(config, w);
         }
@@ -119,7 +144,28 @@ public interface ConfigLoader<T extends Config> {
      * @throws IOException
      */
     default <C> void save(C object) throws IOException {
-        save(new ObjectConverter().toConfig(object, getFormat()::createConfig));
+        save(fromObject(object));
+    }
+
+    /**
+     * Convenience method to write a config to a string.
+     *
+     * @param config The config
+     * @return The config string
+     */
+    default String dump(T config) {
+        return getFormat().createWriter().writeToString(config);
+    }
+
+    /**
+     * Convenience method to convert a config from an object then write it to a string.
+     *
+     * @param object The config object
+     * @param <C>    The object type
+     * @return The config string
+     */
+    default <C> String dump(C object) {
+        return dump(fromObject(object));
     }
 
     /**
@@ -147,18 +193,18 @@ public interface ConfigLoader<T extends Config> {
         /**
          * Sets the given supplier output to be used to read the config when loading.
          *
-         * @param input A supplier of a Reader
+         * @param reader A supplier of a Reader
          * @return This object
          */
-        Builder<T> withInput(StreamOpener<Reader> input);
+        Builder<T> withReader(StreamOpener<Reader> reader);
 
         /**
          * Sets the given supplier output to be used to write the config when saving.
          *
-         * @param output A supplier of a Writer.
+         * @param writer A supplier of a Writer.
          * @return This object
          */
-        Builder<T> withOutput(StreamOpener<Writer> output);
+        Builder<T> withWriter(StreamOpener<Writer> writer);
 
         /**
          * Adds comments to the output of the loader. Subsequent calls may overwrite previous values or throw exceptions
@@ -187,7 +233,7 @@ public interface ConfigLoader<T extends Config> {
          * @return This instance
          */
         default Builder<T> loadFrom(String configString) {
-            return withInput(() -> new StringReader(configString));
+            return withReader(() -> new StringReader(configString));
         }
 
         /**
@@ -198,7 +244,7 @@ public interface ConfigLoader<T extends Config> {
          * @return This instance
          */
         default Builder<T> readFrom(URL url, Charset charset) {
-            return withInput(() -> new InputStreamReader(url.openStream(), charset));
+            return withReader(() -> new InputStreamReader(url.openStream(), charset));
         }
 
         /**
@@ -209,7 +255,7 @@ public interface ConfigLoader<T extends Config> {
          * @return This instance
          */
         default Builder<T> readFrom(Path path, Charset charset) {
-            return withInput(() -> Files.newBufferedReader(path, charset));
+            return withReader(() -> Files.newBufferedReader(path, charset));
         }
 
         /**
@@ -221,7 +267,7 @@ public interface ConfigLoader<T extends Config> {
          * @return This instance
          */
         default Builder<T> writeTo(Path path, Charset charset, OpenOption... options) {
-            return withOutput(() -> Files.newBufferedWriter(path, charset, options));
+            return withWriter(() -> Files.newBufferedWriter(path, charset, options));
         }
 
         /**

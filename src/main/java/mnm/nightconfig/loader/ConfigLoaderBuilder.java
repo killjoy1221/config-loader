@@ -25,13 +25,13 @@ class ConfigLoaderBuilder<T extends Config> implements ConfigLoader.Builder<T> {
         this.format = format;
     }
 
-    public ConfigLoader.Builder<T> withInput(StreamOpener<Reader> input) {
-        this.reader = input;
+    public ConfigLoader.Builder<T> withReader(StreamOpener<Reader> reader) {
+        this.reader = reader;
         return this;
     }
 
-    public ConfigLoader.Builder<T> withOutput(StreamOpener<Writer> output) {
-        this.writer = output;
+    public ConfigLoader.Builder<T> withWriter(StreamOpener<Writer> writer) {
+        this.writer = writer;
         return this;
     }
 

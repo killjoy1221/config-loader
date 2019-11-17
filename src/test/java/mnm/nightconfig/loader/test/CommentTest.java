@@ -17,14 +17,11 @@ public class CommentTest {
     @Test
     public void testCommentAnnotations() throws IOException {
 
-        StringWriter sw = new StringWriter();
-
         ConfigLoader<CommentedConfig> loader = ConfigLoader.builder(TomlFormat.instance())
-                .withOutput(() -> sw)
                 .withComments(AnnotatedCommentedConfig.class)
                 .build();
 
-        loader.save(new AnnotatedCommentedConfig());
+        String config = loader.dump(new AnnotatedCommentedConfig());
         String expectedConfig = "" +
                 "#it's a hello\n" +
                 "foo_bar = \"Hello world\"\n" +
@@ -33,7 +30,7 @@ public class CommentTest {
                 "[nested]\n" +
                 "\t#Yes!\n" +
                 "\tbar = \"noooo!\"\n\n";
-        assertEquals(expectedConfig, sw.toString().replace("\r\n", "\n"));
+        assertEquals(expectedConfig, config.replace("\r\n", "\n"));
     }
 
     public static class AnnotatedCommentedConfig {
